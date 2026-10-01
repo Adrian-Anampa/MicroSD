@@ -120,7 +120,7 @@ int main(void)
   /*
    * Para el DHT11
    */
-  HAL_TIM_Base_Start_IT(&htim9);// Inicializamos temporizadores
+  HAL_TIM_Base_Start(&htim9);// Inicializamos temporizadores
      uint32_t current_time = HAL_GetTick();
      last_time_dht = current_time;
      last_time_rak_check = current_time;
@@ -146,7 +146,7 @@ int main(void)
 	               TCI = DHT11_Read(); // Celsius integral
 	               TCD = DHT11_Read(); // Celsius decimal
 	               SUM = DHT11_Read(); // Check sum
-	                 if (RHI + RHD + TCI + TCD == SUM)
+	                 if ((uint8_t)(RHI + RHD + TCI + TCD) == SUM)
 	            		{
 	            		  tCelsius = (float)TCI + (float)(TCD/10.0);
 	            		  RH = (float)RHI + (float)(RHD/10.0);
@@ -164,8 +164,6 @@ int main(void)
 
 	            }
 	        }
-
-	  HAL_Delay(INTERVALO_DHT);
 
     /* USER CODE END WHILE */
 
@@ -349,7 +347,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(SD_CS_GPIO_Port, SD_CS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(DHT11_GPIO_Port, DHT11_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(DHT11_GPIO_Port, DHT11_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : SD_CS_Pin */
   GPIO_InitStruct.Pin = SD_CS_Pin;
