@@ -36,6 +36,8 @@ FRESULT sd_adjuntar_csv(const char *filename, const char *header,const char *lin
 	FRESULT res , rc;
 	UINT bw , len;
 
+	HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_RESET); /*led on , escribiendo no sacar*/
+
 	res= sd_montado();
 	if(res!= FR_OK){
 		sd_desmontado();
@@ -61,5 +63,6 @@ FRESULT sd_adjuntar_csv(const char *filename, const char *header,const char *lin
 		if(res ==FR_OK) res=rc;
 	}
 	sd_desmontado();
+	HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_SET); /*led apagada , escribiendo no sacar*/
 	return res;
 }
