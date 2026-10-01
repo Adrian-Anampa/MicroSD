@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "dht11.h"
 #include "string.h"
+#include "sd_functions.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -65,6 +66,7 @@ uint32_t last_time_dht = 0;
 uint32_t last_time_rak_check = 0;
 uint32_t last_time_send = 0;
 
+char linea_csv[48];
 
 /* USER CODE END PV */
 
@@ -153,6 +155,12 @@ int main(void)
 	            		  int len = snprintf(buffer,sizeof(buffer),"T=%.2f,H=%.2f\r\n",tCelsius,RH);
 	            		  	  HAL_UART_Transmit(&huart1,(uint8_t *) buffer,len, 200);
 
+	            		snprintf(linea_csv,sizeof(linea_csv),"%lu,%.1f,%.1f\r\n",HAL_GetTick()/1000,tCelsius,RH);
+	            		FRESULT r=sd_adjuntar_csv("DATOS.CSV","time,temp_C,hum_pct", linea_csv);
+							if(r!=FR_OK){
+								int n= snprintf(buffer,sizeof(buffer),"SD ERROR %d\r\n",r);
+								HAL_UART_Transmit(&huart1, (uint8_t*)buffer, n, 150);
+							}
 	            		}
 	                 else{
 	                	 HAL_UART_Transmit(&huart1, (uint8_t*)"DHT ERROR CHECKSUM\r\n", 20, 100);
