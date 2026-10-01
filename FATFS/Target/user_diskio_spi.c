@@ -84,6 +84,8 @@ DSTATUS Stat = STA_NOINIT;	/* Physical drive status */
 static
 BYTE CardType;			/* Card type flags */
 
+uint8_t sd_dbg_cmd0 = 0, sd_dbg_ty = 0;   /* DEBUG temporal */
+
 uint32_t spiTimerTickStart;
 uint32_t spiTimerTickDelay;
 
@@ -332,7 +334,8 @@ inline DSTATUS USER_SPI_initialize (
 	for (n = 10; n; n--) xchg_spi(0xFF);	/* Send 80 dummy clocks */
 
 	ty = 0;
-	if (send_cmd(CMD0, 0) == 1) {			/* Put the card SPI/Idle state */
+	sd_dbg_cmd0 = send_cmd(CMD0, 0);
+		if (sd_dbg_cmd0 == 1) {			/* Put the card SPI/Idle state */
 		SPI_Timer_On(1000);					/* Initialization timeout = 1 sec */
 		if (send_cmd(CMD8, 0x1AA) == 1) {	/* SDv2? */
 			for (n = 0; n < 4; n++) ocr[n] = xchg_spi(0xFF);	/* Get 32 bit return value of R7 resp */
@@ -355,6 +358,7 @@ inline DSTATUS USER_SPI_initialize (
 		}
 	}
 	CardType = ty;	/* Card type */
+	sd_dbg_ty = ty;
 	despiselect();
 
 	if (ty) {			/* OK */

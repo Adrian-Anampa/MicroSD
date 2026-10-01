@@ -128,7 +128,7 @@ int main(void)
      last_time_rak_check = current_time;
      last_time_send = current_time;
   HAL_Delay(INTERVALO_DHT);
-
+  HAL_UART_Transmit(&huart1, (uint8_t*)"Iniciando Medicion\r\n",20, 100);
 
   /* USER CODE END 2 */
 
@@ -156,9 +156,10 @@ int main(void)
 	            		  	  HAL_UART_Transmit(&huart1,(uint8_t *) buffer,len, 200);
 
 	            		snprintf(linea_csv,sizeof(linea_csv),"%lu,%.1f,%.1f\r\n",HAL_GetTick()/1000,tCelsius,RH);
-	            		FRESULT r=sd_adjuntar_csv("DATOS.CSV","time,temp_C,hum_pct", linea_csv);
+	            		FRESULT r=sd_adjuntar_csv("DATOS.CSV","time,temp_C,hum_pct\r\n", linea_csv);
 							if(r!=FR_OK){
-								int n= snprintf(buffer,sizeof(buffer),"SD ERROR %d\r\n",r);
+								extern uint8_t sd_dbg_cmd0, sd_dbg_ty;
+								int n = snprintf(buffer, sizeof(buffer), "SD ERROR %d CMD0=0x%02X TIPO=%d\r\n", r, sd_dbg_cmd0, sd_dbg_ty);
 								HAL_UART_Transmit(&huart1, (uint8_t*)buffer, n, 150);
 							}
 	            		}
